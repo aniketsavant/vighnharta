@@ -1,0 +1,370 @@
+<div class="card">
+  <!-- <div class="card-header">
+      <strong>Add Category Form</strong>
+    </div> -->
+  <div class="card-body">
+    <div class="row">
+      <div class="col-6">
+        <!-- <alert type="info">
+          <strong>Information!</strong> Click on button to add new category
+        </alert> -->
+        <div class="form-group">
+          <button
+            type="button"
+            class="btn btn-block btn-success"
+            data-toggle="modal"
+            (click)="onAddCategoryClick()"
+          >
+            Add Category
+          </button>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-group">
+          <button
+            type="button"
+            class="btn btn-block btn-primary"
+            data-toggle="modal"
+            (click)="onAddSubCategoryClick()"
+          >
+            Add Sub Category
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-10">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+          </div>
+          <input
+            class="form-control"
+            placeholder="Type to search category"
+            #myInput
+            [(ngModel)]="searchValue"
+            type="text"
+            (input)="applyFilter(myInput.value)"
+          />
+        </div>
+      </div>
+      <div class="col-2" *ngIf="isSubCategoryShow">
+        <button
+          type="button"
+          class="btn btn-block btn-warning"
+          (click)="backToCategoryList()"
+        >
+          Goto Category List
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>{{ isSubCategoryShow ? "Sub " : "" }}Category list {{ isSubCategoryShow ? "of " : "" }}{{ isSubCategoryShow ? selectedCatName : "" }}:</h2>
+<!-- <h2>Sub category list of Capsicum:</h2> -->
+<div class="row" *ngIf="!isSubCategoryShow">
+  <!-- main category list -->
+  <div
+    class="col-sm-6 col-md-4"
+    *ngFor="let cat of filteredCatCopy; let i = index"
+  >
+    <div class="card card-accent-primary">
+      <a (click)="onMainCategoryClick(cat)" class="categories">
+        <div class="card-header">
+          <strong>{{ cat.category_name }}</strong>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <img [src]="cat.category_files" class="productImage" />
+          </div>
+        </div>
+        <div class="row align-items-center buttonClass">
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn btn-block btn-primary"
+              (click)="onEditCategoryClick(cat)"
+            >
+              Edit
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn btn-block btn-dark"
+              (click)="onDeleteCategoryClick(cat)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- sub category list -->
+<div class="row" *ngIf="isSubCategoryShow">
+  <div
+    class="col-sm-6 col-md-4"
+    *ngFor="let cat of filteredSubCategoryList; let i = index"
+  >
+    <div class="card card-accent-primary" [hidden]="cat.status ==='0'">
+      <a class="categories">
+        <div class="card-header">
+          <strong>{{ cat.subcategory_name }}</strong>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <img [src]="cat.subcategory_files" class="productImage" />
+          </div>
+        </div>
+        <div class="row align-items-center buttonClass">
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn btn-block btn-primary"
+              (click)="onEditSubCategoryClick(cat, selectedCategoryId)"
+            >
+              Edit
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn btn-block btn-dark"
+              (click)="onDeleteSubCategoryClick(cat)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- model for main category -->
+<div
+  bsModal
+  #modelForAddEditCategory="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div [ngClass]="modelValues?.modelClass" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{ modelValues.modelTitle }}</h4>
+        <button
+          type="button"
+          class="close"
+          (click)="onMainCategoryCloseClick()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form
+        [formGroup]="addMainCategoryForm"
+        (ngSubmit)="onAddEditMainCategoryClick()"
+        enctype="multipart/form-data"
+      >
+        <div class="modal-body">
+          <div class="card">
+            <div class="card-body">
+              <div class="form-group">
+                <label for="categoryName">{{ modelValues.name }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="categoryName"
+                  placeholder="Enter name here.."
+                  formControlName="categoryName"
+                />
+              </div>
+              <div class="form-group">
+                <label for="categoryDiscription">{{ modelValues.discription }}</label>
+                <textarea
+                  id="categoryDiscription"
+                  name="categoryDiscription"
+                  rows="5"
+                  class="form-control"
+                  placeholder="Enter discription here.."
+                  formControlName="categoryDiscription"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="category">Select City</label>
+                <select
+                  id="select1"
+                  name="select1"
+                  class="form-control"
+                  formControlName="city_name"
+                >
+                  <option value="">Select city</option>
+                  <option
+                    [value]="city.city_name"
+                    *ngFor="let city of cityList"
+                    >{{ city.city_name }}</option
+                  >
+                </select>
+              </div>
+
+
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label" for="categoryImage"
+                  >File input</label
+                >
+                <div class="col-md-9">
+                  <input
+                    type="file"
+                    id="file"
+                    name="categoryImage"
+                    formControlName="categoryImage"
+                    (change)="onFileChange($event)"
+                  />
+                </div>
+              </div>
+              ( Note: Chooes better quality image for better result)
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onMainCategoryCloseClick()"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            [ngClass]="modelValues?.saveButtonClass"
+            [disabled]="!addMainCategoryForm.valid"
+          >
+            {{ modelValues?.saveButtonName }}
+          </button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!-- model for sub category -->
+<div
+  bsModal
+  #modelForAddEditSubCategory="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div [ngClass]="modelValues?.modelClass" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{ modelValues.modelTitle }}</h4>
+        <button
+          type="button"
+          class="close"
+          (click)="onSubCategoryCloseClick()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form
+        [formGroup]="addSubCategoryForm"
+        (ngSubmit)="onAddEditSubCategoryClick()"
+        enctype="multipart/form-data" 
+      >
+        <div class="modal-body">
+          <!-- <p>One fine body&hellip;</p> -->
+          <div class="card">
+            <div class="card-body">
+              <div class="form-group">
+                <label for="category">Select Category:</label>
+                <select
+                  id="select1"
+                  name="select1"
+                  class="form-control"
+                  formControlName="selectedcategoryId"
+                >
+                  <option value="">Select Category</option>
+                  <option
+                    [value]="cat.category_id"
+                    *ngFor="let cat of allCategoryList"
+                    >{{ cat.category_name }}</option
+                  >
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="company">{{ modelValues.name }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="category_name"
+                  placeholder="Enter name here.."
+                  formControlName="subCategoryName"
+                />
+              </div>
+              <div class="form-group">
+                <label for="vat">{{ modelValues.discription }}</label>
+                <textarea
+                  id="textarea-input"
+                  name="textarea-input"
+                  rows="5"
+                  class="form-control"
+                  placeholder="Enter discription here.."
+                  formControlName="subCategoryDiscription"
+                ></textarea>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label" for="file-input"
+                  >File input</label
+                >
+                <div class="col-md-9">
+                  <input
+                    type="file"
+                    id="file-input"
+                    name="file-input"
+                    formControlName="subCategoryImage"
+                    (change)="onFileChange($event)"
+                  />
+                </div>
+              </div>
+              ( Note: Chooes better quality image for better result)
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onSubCategoryCloseClick()"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            [ngClass]="modelValues?.saveButtonClass"
+            [disabled]="!addSubCategoryForm.valid"
+          >
+            {{ modelValues?.saveButtonName }}
+          </button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

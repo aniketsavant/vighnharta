@@ -1,0 +1,411 @@
+<div class="animated fadeIn">
+  <div class="card">
+    <div class="card-header">
+      <strong> Order List</strong>
+    </div>
+    <div class="card-body">
+      <alert type="info">
+        <strong>Information!</strong> Please click on row to change the status
+        of order.
+      </alert>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <button
+            type="button"
+            class="btn btn-block btn-warning"
+            (click)="openModelForOrderLimit.show()"
+          >
+            Set Order Limit
+          </button>
+        </div>
+        <div class="col-md-4 offset-md-4">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa fa-search"></i></span>
+            </div>
+            <input
+              class="form-control"
+              placeholder="Search here"
+              type="text"
+              (keyup)="applyFilter($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="mat-elevation-z8">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          multiTemplateDataRows
+          class="mat-elevation-z8"
+          matSort
+        >
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <strong>Sr No.</strong>
+            </th>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="product_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <strong>ID</strong>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <button
+                class="btn btn-block btn-link active"
+                type="button"
+                (click)="onOrderListClick(element)"
+              >{{ element.id }}</button>
+            </td>
+          </ng-container>
+
+          <!-- Progress Column -->
+          <ng-container matColumnDef="full_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.Users?.full_name }}
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone N.</th>
+            <td mat-cell *matCellDef="let element">
+              (P){{ element.Users?.phone }}<br />{{
+                element.Users?.alternate_phone !== "" ? "(A)" : ""
+              }}{{ element.Users?.alternate_phone }}
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="full_address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.Users?.full_address }}, {{ element.Users?.landmark }},
+              {{ element.Users?.city }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="city">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>City</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.Users?.city }}
+            </td>
+          </ng-container>
+
+          <!-- <ng-container matColumnDef="maker_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Art Name</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.orderList?.maker_name }}
+            </td>
+          </ng-container> -->
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="total_amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.total_amount }} /-
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="order_date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.order_date | date: "short" }}
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.status | titlecase }}
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <!-- <ng-container matColumnDef="orderList">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Order List
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <button
+                class="btn btn-block btn-link active"
+                type="button"
+                (click)="onOrderListClick(element)"
+              >
+                Order List
+              </button>
+            </td>
+          </ng-container> -->
+
+          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+          <ng-container matColumnDef="expandedDetail">
+            <td
+              mat-cell
+              *matCellDef="let element"
+              [attr.colspan]="columnsToDisplay.length"
+            >
+              <div
+                class="example-element-detail"
+                [@detailExpand]="
+                  element == expandedElement ? 'expanded' : 'collapsed'
+                "
+              >
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                      <button
+                        type="button"
+                        class="btn btn-block btn-warning"
+                        *ngIf="
+                          element.status !== 'accept' &&
+                          element.status !== 'dispatch' &&
+                          element.status !== 'delivered' &&
+                          element.status !== 'reject'
+                        "
+                        (click)="changeOrderStatus(element, 'accept')"
+                      >
+                        Accept
+                      </button>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                      <button
+                        type="button"
+                        class="btn btn-block btn-primary"
+                        *ngIf="
+                          element.status !== 'dispatch' &&
+                          element.status !== 'delivered' &&
+                          element.status !== 'reject'
+                        "
+                        (click)="changeOrderStatus(element, 'dispatch')"
+                      >
+                        Dispatch
+                      </button>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                      <button
+                        type="button"
+                        class="btn btn-block btn-success"
+                        *ngIf="
+                          element.status !== 'delivered' &&
+                          element.status !== 'reject'
+                        "
+                        (click)="changeOrderStatus(element, 'delivered')"
+                      >
+                        Delivered
+                      </button>
+                    </div>
+
+                    <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                      <button
+                        type="button"
+                        class="btn btn-block btn-danger"
+                        *ngIf="
+                          element.status !== 'accept' &&
+                          element.status !== 'dispatch' &&
+                          element.status !== 'delivered' &&
+                          element.status !== 'reject'
+                        "
+                        (click)="changeOrderStatus(element, 'reject')"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                      <button
+                        type="button"
+                        class="btn btn-block btn-dark"
+                        (click)="changeOrderStatus(element, 'remove')"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+          <tr
+            mat-row
+            *matRowDef="let element; columns: columnsToDisplay"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="
+              expandedElement = expandedElement === element ? null : element
+            "
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="example-detail-row"
+          ></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #showOrderList="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  id="contentToConvert"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <strong>Name:</strong> {{ selectedOrder?.Users?.full_name }}<br />
+          <strong>Phone Number:</strong> {{ selectedOrder?.Users?.phone }}/{{
+            selectedOrder?.Users?.alternate_phone
+          }}<br />
+          <strong>Address:</strong> {{ selectedOrder?.Users?.full_address }},
+          {{ selectedOrder?.Users?.landmark }}, {{ selectedOrder?.Users?.city
+          }}<br />
+          <!-- <strong>Art Name</strong>{{selectedOrder?.orderList?.maker_name}} -->
+          <strong>Date:</strong> {{ selectedOrder?.order_date | date: "short"
+          }}<br />
+          <strong>Total Amount:</strong> ₹{{ selectedOrder?.total_amount }}/-
+        </h4>
+        <!-- <button type="button" class="btn btn-primary downloadButton" (click)="convetToPDF()">
+          Download
+        </button> -->
+        <img
+          src="assets/img/ganesh_logo.png"
+          class="ganesh_image"
+          (click)="convetToPDF()"
+          alt="Ganesh Logo"
+        />
+        <button
+          type="button"
+          class="close"
+          (click)="showOrderList.hide()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table>
+          <tr>
+            <th>Sr No.</th>
+            <th>Name</th>
+            <!-- <th>Image</th> -->
+            <th>Dhotar Color</th>
+            <th>Quantity</th>
+            <!-- <th>Total Qauantity</th> -->
+            <th>Amount</th>
+          </tr>
+          <tr *ngFor="let list of selectedOrder?.orderList; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ list.product_name }}</td>
+            <!-- <td><img src="{{list.product_image[0]}}" alt="bappa_img" class="order_image"></td> -->
+            <td>{{ list.dhotar_color }}</td>
+            <td>{{ list.buy_quantity }}</td>
+            <td>
+              <strong *ngIf="list.item_discount_price !== ''"
+                >₹{{ list.item_discount_price * list.buy_quantity }}</strong
+              >
+              <strong *ngIf="list.item_discount_price === ''"
+                >₹{{ list.item_mrp * list.buy_quantity }}</strong
+              >
+            </td>
+          </tr>
+        </table>
+        <!-- </ol> -->
+      </div>
+      <div class="modal-footer">
+        <!-- <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="showOrderList.hide()"
+        >
+          Close
+        </button> -->
+        <h3><u>THANK YOU..!!</u></h3>
+        <!-- <p>- 7387040077</p> -->
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div
+  bsModal
+  #openModelForOrderLimit="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-warning" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Set order limit on total amount:</h4>
+        <button
+          type="button"
+          class="close"
+          (click)="openModelForOrderLimit.hide()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- <p>One fine body&hellip;</p> -->
+        <div class="form-group">
+          <label for="company">Order Limit Price</label>
+          <input
+            type="number"
+            class="form-control"
+            id="orderLimti"
+            placeholder="Enter Amount to set order limit."
+            [(ngModel)]="selectedOrderLimit"
+          />
+        </div>
+        <div class="form-group">
+          <label for="company">Delivery charges</label>
+          <input
+            type="number"
+            class="form-control"
+            id="deliveryCharges"
+            placeholder="Enter Delivery Charges."
+            [(ngModel)]="delivery_charges"
+          />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="openModelForOrderLimit.hide()"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          *ngIf="selectedOrderLimit >= 0 && delivery_charges >= 0"
+          (click)="setOrderLimit()"
+        >
+          Save changes
+        </button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

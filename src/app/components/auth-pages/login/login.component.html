@@ -1,0 +1,112 @@
+<div class="app-body setBackgrouondImg">
+  <main class="main d-flex align-items-center">
+    <div class="container">
+      <img src="assets/img/logo.png" alt="" class="LogoClass">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card-group">
+            <div class="card p-4">
+              <div class="card-body">
+                <form [formGroup]="loginForm" (ngSubmit)="onLoginClick()">
+                  <h1>Login</h1>
+                  <p class="text-muted">Sign In to your account</p>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"
+                          ><i class="icon-user"></i
+                        ></span>
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Username*"
+                        autocomplete="email"
+                        formControlName="email"
+                        required
+                      />
+                    </div>
+                    <div
+                      *ngIf="
+                        (f.email.invalid && f.email.touched) ||
+                        f.email.dirty
+                      "
+                    >
+                      <small
+                        *ngIf="f.email.errors?.required"
+                        class="text-danger"
+                        >Username is required</small
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"
+                          ><i class="icon-lock"></i
+                        ></span>
+                      </div>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        placeholder="Password*"
+                        autocomplete="current-password"
+                        formControlName="password"
+                        required
+                      />
+                    </div>
+                    <div
+                      *ngIf="
+                        (f.password.invalid && f.password.touched) ||
+                        f.password.dirty
+                      "
+                    >
+                      <small
+                        *ngIf="f.password.errors?.required"
+                        class="text-danger"
+                        >Password is required</small
+                      >
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                      <button
+                        type="submit"
+                        class="btn btn-primary px-4"
+                        [disabled]="!loginForm.valid"
+                      >
+                        Login
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!-- <div
+              class="card text-white bg-primary py-5 d-md-down-none"
+              style="width: 44%;"
+            >
+              <div class="card-body text-center">
+                <div>
+                  <h2>Register Your Account</h2>
+                  <p>
+                    You cant Login if you not registered; please first register
+                    your accound for login
+                  </p>
+                  <button
+                    type="button"
+                    class="btn btn-primary active mt-3"
+                    routerLink="/register"
+                  >
+                    Register Now!
+                  </button>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
