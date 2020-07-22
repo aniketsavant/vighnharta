@@ -12,11 +12,11 @@ import { httpOptions } from '../constants/httpHeaders';
 export class CategoryService {
   constructor(private http: HttpClient) {}
 
-  public getAllCategoryListCall(): Observable<any> {
+  public getAllCategoryListCall(formData): Observable<any> {
     return this.http
-      .get<any>(
+      .post<any>(
         `${environment.BASE_URL}${MAIN_URL_CONSTANTS.GET_CATEGORY_LIST}`,
-        httpOptions
+        formData
       )
       .pipe(catchError(this.handleError));
   }

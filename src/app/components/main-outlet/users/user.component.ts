@@ -25,6 +25,7 @@ export class UserComponent implements OnInit {
     'phone',
     'email',
     'full_address',
+    'city',
     'status',
   ];
   public dataSource: MatTableDataSource<any> = new MatTableDataSource();

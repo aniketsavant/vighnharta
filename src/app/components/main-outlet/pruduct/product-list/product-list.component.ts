@@ -22,6 +22,8 @@ export class ProductListComponent implements OnInit {
   public filteredAllProductList: any = [];
   public selectedProductDataForEdit: any;
   public searchValue: string = '';
+  public cityList: Array<Object> = [];
+
 
   constructor(
     private categoryService: CategoryService,
@@ -30,11 +32,14 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getAllCategory();
+    // this.getAllCategory();
+    this.getCities();
   }
 
-  getAllCategory() {
-    this.categoryService.getAllCategoryListCall().subscribe((res) => {
+  getAllCategory(cityName) {
+    const formData = new FormData();
+    formData.append('city_name', cityName);
+    this.categoryService.getAllCategoryListCall(formData).subscribe((res) => {
       if (res.status === 'Ok') {
         this.allCategoryList = res.data;
       } else {
@@ -172,5 +177,23 @@ export class ProductListComponent implements OnInit {
 
   assignProductListCopy(): void {
     this.filteredAllProductList = Object.assign([], this.allProductList);
+  }
+
+  private getCities() {
+    this.categoryService.getCityList().subscribe((res: any) => {
+      if (res.status === 'Ok') {
+        this.cityList = res.data;
+      } else {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+      }
+    }),
+      (err) => {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+      };
+  }
+
+  public onCitySelection(e): void {
+    // console.log(e.target.value);
+    this.getAllCategory(e.target.value);
   }
 }

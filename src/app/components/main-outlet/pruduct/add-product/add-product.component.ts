@@ -34,8 +34,10 @@ export class AddProductComponent implements OnInit {
   public discountRateUnit = CONSTANT.FOR_DISCOUNT_UNIT;
   public files = null;
   public offerEdit: boolean = false;
-  public editOfferItemId: string = '';
-  public maker_name_list: Array<string> = CONSTANT.MURTI_ART_NAME;
+  public editOfferItemId: string = '';  
+  public maker_name_list: Array<Object>;
+  public cityList: Array<Object> = [];
+  
   constructor(
     private formBuilder: FormBuilder,
     private productService: ProductService,
@@ -46,6 +48,7 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.productForm = this.formBuilder.group({
+      city_name:[''],
       productId: [''],
       productCategory: ['', Validators.required],
       productSubCategory: ['', Validators.required],
@@ -70,11 +73,45 @@ export class AddProductComponent implements OnInit {
       ? CONSTANT.FOR_PRODUCT_EDIT
       : CONSTANT.FOR_PRODUCT_SAVE;
 
-    this.getAllCategory();
+    // this.getAllCategory();
+    this.getArtList();
+    this.getCities();
   }
 
-  getAllCategory() {
-    this.categoryService.getAllCategoryListCall().subscribe((res) => {
+  private getCities() {
+
+    this.categoryService.getCityList().subscribe((res: any) => {
+      if (res.status === 'Ok') {
+        this.cityList = res.data;
+      } else {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+      }
+    }),
+      (err) => {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+        this.ngxLoader.stop();
+      };
+  }
+
+  private getArtList(): void {
+    this.productService.getArtList().subscribe((res: any) => {
+      if (res.status == 'Ok') {
+        this.maker_name_list = res.data;
+      } else {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+      }
+    }),
+      (err) => {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+        console.log('Error', err);
+      };
+  }
+
+
+  getAllCategory(cityName) {
+    const formData = new FormData();
+    formData.append('city_name', cityName);
+    this.categoryService.getAllCategoryListCall(formData).subscribe((res) => {
       if (res.status === 'Ok') {
         this.allCategoryList = res.data;
         if (this.isEdit && this.allCategoryList.length !== 0) {
@@ -495,5 +532,10 @@ export class AddProductComponent implements OnInit {
           ? item.item_discount_percent
           : item.item_discount_rupee,
     });
+  }
+
+  public onCitySelection(e): void {
+    // console.log(e.target.value);
+    this.getAllCategory(e.target.value);
   }
 }

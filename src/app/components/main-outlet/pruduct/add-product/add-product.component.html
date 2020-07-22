@@ -8,7 +8,40 @@
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col-6">
+            <div class="col-4">
+              <div class="form-group">
+                <div class="form-group">
+                  <label for="category">Select City*</label>
+                  <select
+                    id="select1"
+                    name="select1"
+                    class="form-control"
+                    formControlName="city_name"
+                    (change)="onCitySelection($event)"
+                  >
+                    <option value="">Select city</option>
+                    <option
+                      [value]="city.city_name"
+                      *ngFor="let city of cityList"
+                      >{{ city.city_name }}</option
+                    >
+                  </select>
+                  <div
+                    *ngIf="
+                      (f.city_name.invalid && f.city_name.touched) ||
+                      f.city_name.dirty
+                    "
+                  >
+                    <small
+                      *ngIf="f.city_name.errors?.required"
+                      class="text-danger"
+                      >Please select city name</small
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
               <div class="form-group">
                 <label for="company"
                   >Product Category<span class="text-danger"
@@ -43,7 +76,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-6">
+            <div class="col-4">
               <div class="form-group" *ngIf="allSubCategoryList.length > 0">
                 <label for="company"
                   >Product Sub Category<span class="text-danger"
@@ -116,9 +149,9 @@
                 >
                   <option value="">Select Art</option>
                   <option
-                    [value]="value"
+                    [value]="value.art_name"
                     *ngFor="let value of maker_name_list"
-                    >{{ value }}</option
+                    >{{ value.art_name }}</option
                   >
                 </select>
                 <div
@@ -417,10 +450,10 @@
 
           <div class="row">
             <div *ngIf="!offerEdit" class="col-8"></div>
-            <div *ngIf="offerEdit" class="col-4"></div>            
+            <div *ngIf="offerEdit" class="col-4"></div>
             <div class="col-4">
               <button
-              *ngIf="!offerEdit"
+                *ngIf="!offerEdit"
                 type="button"
                 class="btn btn-block btn-warning saveOfferButton"
                 (click)="onAddOffer()"
@@ -433,7 +466,7 @@
                 Add Offer
               </button>
               <button
-              *ngIf="offerEdit"
+                *ngIf="offerEdit"
                 type="button"
                 class="btn btn-block btn-success saveOfferButton"
                 (click)="onAddOffer()"
@@ -446,9 +479,8 @@
                 Update Offer
               </button>
             </div>
-            <div class="col-4"  *ngIf="offerEdit">
+            <div class="col-4" *ngIf="offerEdit">
               <button
-              
                 type="button"
                 class="btn btn-block btn-dark saveOfferButton"
                 (click)="clearOfferValue()"

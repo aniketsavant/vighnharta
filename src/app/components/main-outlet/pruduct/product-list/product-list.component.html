@@ -4,7 +4,7 @@
   </div> -->
   <div class="card-body">
     <form>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-6">
           <div class="form-group row">
             <label class="col-md-3 col-form-label" for="category"
@@ -53,6 +53,57 @@
             </div>
           </div>
         </div>
+      </div> -->
+      <div class="row">
+        <div class="col-4">
+          <!-- <label for="category">Select City</label> -->
+          <select
+            id="select1"
+            name="select1"
+            class="form-control"
+            (change)="onCitySelection($event)"
+          >
+            <option value="">Select city</option>
+            <option [value]="city.city_name" *ngFor="let city of cityList">{{
+              city.city_name
+            }}</option>
+          </select>
+        </div>
+        <div class="col-4">
+          <div class="form-group">
+            <select
+              id="select1"
+              name="select1"
+              class="form-control"
+              (change)="onCategoryChange($event.target.value)"
+            >
+              <option value="0">Select Category</option>
+              <option
+                *ngFor="let category of allCategoryList; let i = index"
+                [value]="category.category_id"
+                >{{ category.category_name }}</option
+              >
+            </select>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="form-group" *ngIf="allSubCategoryList.length > 0">
+            <select
+              id="select1"
+              name="select1"
+              class="form-control"
+              (change)="getAllProducts($event.target.value)"
+            >
+              <option value="0">Select Category</option>
+              <option
+                *ngFor="let category of allSubCategoryList; let i = index"
+                [value]="category.subcategory_id"
+              >
+                {{ category.subcategory_name }}</option
+              >
+            </select>
+          </div>
+        </div>
       </div>
     </form>
 
@@ -88,7 +139,7 @@
   >
     <div class="card card-accent-primary">
       <div class="card-header">
-       <strong> {{ item.product_name }}</strong>
+        <strong> {{ item.product_name }}</strong>
         <div class="card-header-actions" style="height: 21px;">
           <label class="switch switch-sm switch-label switch-info">
             <input
@@ -122,9 +173,11 @@
             >
             <p>
               <strong>Discription</strong>: {{ item.product_description }}<br />
-              <strong>Art Name</strong>: {{item.maker_name}}<br/>
-              <strong>Price</strong>: {{item.product_sales[0]?.item_discount_price}}/{{item.product_sales[0]?.item_mrp}}<br/>
-
+              <strong>Art Name</strong>: {{ item.maker_name }}<br />
+              <strong>Price</strong>:
+              {{ item.product_sales[0]?.item_discount_price }}/{{
+                item.product_sales[0]?.item_mrp
+              }}<br />
             </p>
           </div>
         </div>
@@ -152,10 +205,12 @@
     </div>
   </div>
 </div>
-<label *ngIf="isEdit"> <strong>Product</strong>: {{selectedProductDataForEdit.product_name}} </label>
+<label *ngIf="isEdit">
+  <strong>Product</strong>: {{ selectedProductDataForEdit.product_name }}
+</label>
 <app-add-product
   *ngIf="isEdit"
   [isEdit]="isEdit"
-  [productDetails] = "selectedProductDataForEdit"
+  [productDetails]="selectedProductDataForEdit"
   (closeForm)="closeFormCheck($event)"
 ></app-add-product>

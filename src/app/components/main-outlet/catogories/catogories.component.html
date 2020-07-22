@@ -61,6 +61,24 @@
   </div>
 </div>
 
+<div class="form-group">
+  <label for="category">Select City</label>
+  <select
+    id="select1"
+    name="select1"
+    class="form-control"
+    (change)="onCitySelection($event)"
+  >
+    <option value="">Select city</option>
+    <option
+      [value]="city.city_name"
+      *ngFor="let city of cityList"
+      >{{ city.city_name }}</option
+    >
+  </select>
+  </div>
+  
+
 <h2>{{ isSubCategoryShow ? "Sub " : "" }}Category list {{ isSubCategoryShow ? "of " : "" }}{{ isSubCategoryShow ? selectedCatName : "" }}:</h2>
 <!-- <h2>Sub category list of Capsicum:</h2> -->
 <div class="row" *ngIf="!isSubCategoryShow">

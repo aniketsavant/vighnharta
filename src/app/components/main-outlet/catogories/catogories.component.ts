@@ -79,29 +79,27 @@ export class CatogoriesComponent implements OnInit {
       subCategoryImageFileSource: [''],
     });
     this.getCities();
-    this.getCategoryList();
   }
 
-  private getCities(){
-    this.categoryService
-    .getCityList()
-    .subscribe((res: any) => {
+  private getCities() {
+    this.categoryService.getCityList().subscribe((res: any) => {
       if (res.status === 'Ok') {
         this.cityList = res.data;
       } else {
         this.toastr.error('Somthing wrong', 'Oops.!!');
       }
     }),
-    (err) => {
-      this.toastr.error('Somthing wrong', 'Oops.!!');
-      this.ngxLoader.stop();
-    };
+      (err) => {
+        this.toastr.error('Somthing wrong', 'Oops.!!');
+        this.ngxLoader.stop();
+      };
   }
 
-
-  private getCategoryList(): void {
+  private getCategoryList(cityName): void {
+    const formData = new FormData();
+    formData.append('city_name', cityName);
     this.categoryService
-      .getAllCategoryListCall()
+      .getAllCategoryListCall(formData)
       .subscribe((res: GetCategoryList) => {
         if (res.status === 'Ok') {
           this.allCategoryList = res.data;
@@ -111,7 +109,7 @@ export class CatogoriesComponent implements OnInit {
           this.toastr.error('Somthing wrong', 'Oops.!!');
           this.ngxLoader.stop();
         }
-      }), 
+      }),
       (err) => {
         this.toastr.error('Somthing wrong', 'Oops.!!');
         console.log('Error', err);
@@ -142,9 +140,7 @@ export class CatogoriesComponent implements OnInit {
     this.addMainCategoryForm
       .get('categoryDiscription')
       .patchValue(objCategory.category_description);
-    this.addMainCategoryForm
-      .get('city_name')
-      .patchValue(objCategory.city_name);
+    this.addMainCategoryForm.get('city_name').patchValue(objCategory.city_name);
     this.addMainCategoryForm.controls['categoryName'].updateValueAndValidity();
     this.addMainCategoryForm.controls[
       'categoryDiscription'
@@ -195,7 +191,7 @@ export class CatogoriesComponent implements OnInit {
         .subscribe((res) => {
           if (res.status !== 'error') {
             this.toastr.success('Category edited successfully.', 'Done.!!');
-            this.getCategoryList();
+            // this.getCategoryList();
             this.onMainCategoryCloseClick();
             this.ngxLoader.stop();
           } else {
@@ -214,7 +210,7 @@ export class CatogoriesComponent implements OnInit {
         .subscribe((res) => {
           if (res.status !== 'error') {
             this.toastr.success('Category added successfully.', 'Done.!!');
-            this.getCategoryList();
+            // this.getCategoryList();
             this.onMainCategoryCloseClick();
             this.ngxLoader.stop();
           } else {
@@ -238,7 +234,7 @@ export class CatogoriesComponent implements OnInit {
         .subscribe((res) => {
           if (res.status !== 'error') {
             this.toastr.success('Sub category edited successfully.', 'Done.!!');
-            this.getCategoryList();
+            // this.getCategoryList();
             this.onSubCategoryCloseClick();
             this.ngxLoader.stop();
           } else {
@@ -257,7 +253,7 @@ export class CatogoriesComponent implements OnInit {
         .subscribe((res) => {
           if (res.status !== 'error') {
             this.toastr.success('Sub category added successfully.', 'Done.!!');
-            this.getCategoryList();
+            // this.getCategoryList();
             this.onSubCategoryCloseClick();
             this.ngxLoader.stop();
           } else {
@@ -469,5 +465,10 @@ export class CatogoriesComponent implements OnInit {
     } else {
       this.filteredCatCopy = Object.assign([], this.allCategoryList);
     }
+  }
+
+  public onCitySelection(e): void {
+    // console.log(e.target.value);
+    this.getCategoryList(e.target.value);
   }
 }
